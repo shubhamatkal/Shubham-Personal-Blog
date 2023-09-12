@@ -1,3 +1,4 @@
+#Importing Neeeded Packages and files
 from datetime import date
 from flask import Flask, abort, render_template, redirect, url_for, flash
 from flask_bootstrap import Bootstrap5
@@ -10,9 +11,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
 import os
 
-# Import your forms from the forms.py
+# Import Forms from form.py
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 
+#initializing the Flask app, Note:Use FLASKKEY from environment variable
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('FLASKKEY')
 ckeditor = CKEditor(app)
@@ -38,7 +40,7 @@ gravatar = Gravatar(app,
                     use_ssl=False,
                     base_url=None)
 
-# CONNECT TO DB
+# CONNECT TO DB, DB_URI is environment variable
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_URI",'sqlite:///posts.db')
 db = SQLAlchemy()
 db.init_app(app)
@@ -102,7 +104,6 @@ def admin_only(f):
             return abort(403)
         # Otherwise continue with the route function
         return f(*args, **kwargs)
-
     return decorated_function
 
 
@@ -111,7 +112,6 @@ def admin_only(f):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-
         # Check if user email is already present in the database.
         result = db.session.execute(db.select(User).where(User.email == form.email.data))
         user = result.scalar()
